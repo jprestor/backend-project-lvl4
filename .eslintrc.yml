@@ -1,5 +1,4 @@
 ---
-
 root: true
 
 parserOptions:
@@ -17,6 +16,7 @@ env:
 rules:
   no-console: 0
   import/extensions: 0
+  object-curly-newline: 0
   new-cap:
     - error
     - properties: false
@@ -24,6 +24,6 @@ rules:
     - error
     - props: true
       ignorePropertyModificationsFor:
-      - req
-      - reply
-  no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
+        - req
+        - reply
+  no-underscore-dangle: [2, { 'allow': ['__filename', '__dirname'] }]

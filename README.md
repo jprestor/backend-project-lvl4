@@ -17,6 +17,4 @@ $ make start
 
 ---
 
-[![Hexlet Ltd. logo](https://raw.githubusercontent.com/Hexlet/assets/master/images/hexlet_logo128.png)](https://hexlet.io?utm_source=github&utm_medium=link&utm_campaign=fastify-nodejs-application)
-
 Live example: [https://backend-project-lvl4-prestor.herokuapp.com/](https://backend-project-lvl4-prestor.herokuapp.com/)
