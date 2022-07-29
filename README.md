@@ -1,6 +1,7 @@
-### Hexlet tests and linter status:
+# backend-project-lvl4 (Task manager)
 
-[![Actions Status](https://github.com/jprestor/backend-project-lvl4/workflows/hexlet-check/badge.svg)](https://github.com/jprestor/backend-project-lvl4/actions)
+[![Hexlet check Status](https://github.com/jprestor/backend-project-lvl4/workflows/hexlet-check/badge.svg)](https://github.com/jprestor/backend-project-lvl4/actions)
+[![Node CI Status](https://github.com/jprestor/backend-project-lvl4/actions/workflows/nodejs.yml/badge.svg)](https://github.com/jprestor/backend-project-lvl4/actions/workflows/nodejs.yml)
 
 ## Setup
 

@@ -1,5 +1,3 @@
-// @ts-check
-
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from 'fastify-static';
