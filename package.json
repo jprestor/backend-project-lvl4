@@ -53,6 +53,7 @@
     "npm-check-updates": "^13.0.1",
     "objection": "^3.0.1",
     "objection-unique": "^1.2.2",
+    "pg": "^8.7.3",
     "pino-pretty": "^7.6.1",
     "point-of-view": "^5.3.0",
     "pug": "^3.0.2",
@@ -61,6 +62,7 @@
     "webpack": "^5.72.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.3.0",
     "@jest/globals": "^28.1.0",
     "@types/jest": "^27.5.1",
     "@types/node": "^17.0.35",

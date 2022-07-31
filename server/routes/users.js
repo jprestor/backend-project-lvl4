@@ -9,10 +9,19 @@ export default (app) => {
       reply.render('users/index', { users });
       return reply;
     })
+
     .get('/users/new', { name: 'newUser' }, (req, reply) => {
       const user = new app.objection.models.user();
       reply.render('users/new', { user });
     })
+
+    .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
+      const userId = req.params.id;
+      const user = await app.objection.models.user.query().findById(userId);
+      reply.render('users/edit', { user });
+      return reply;
+    })
+
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
       user.$set(req.body.data);
@@ -28,5 +37,41 @@ export default (app) => {
       }
 
       return reply;
-    });
+    })
+
+    .patch('/users/:id', { name: 'editUserEndpoint' }, async (req, reply) => {
+      const userId = req.params.id;
+      const user = await app.objection.models.user.query().findById(userId);
+
+      try {
+        const validUser = await app.objection.models.user.fromJson(req.body.data);
+        await user.$query().update(validUser);
+        req.flash('info', i18next.t('flash.users.edit.success'));
+        reply.redirect(app.reverse('users'));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.users.edit.error'));
+        reply.render('users/edit', { user, errors: data });
+      }
+
+      return reply;
+    })
+
+    .delete(
+      '/users/:id',
+      { name: 'deleteUser', preValidation: app.authenticate },
+      async (req, reply) => {
+        const userId = Number(req.params.id);
+        const currentUserId = req.user.id;
+
+        if (userId !== currentUserId) {
+          req.flash('error', i18next.t('flash.accessDenied'));
+          return reply.redirect(app.reverse('users'));
+        }
+
+        req.logOut();
+        await app.objection.models.user.query().deleteById(userId);
+        req.flash('info', i18next.t('flash.users.delete.success'));
+        return reply.redirect(app.reverse('users'));
+      },
+    );
 };

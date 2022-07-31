@@ -8,6 +8,7 @@ export default (app) => {
       const signInForm = {};
       reply.render('session/new', { signInForm });
     })
+
     .post(
       '/session',
       { name: 'session' },
@@ -27,6 +28,7 @@ export default (app) => {
         return reply.redirect(app.reverse('root'));
       }),
     )
+
     .delete('/session', (req, reply) => {
       req.logOut();
       req.flash('info', i18next.t('flash.session.delete.success'));
