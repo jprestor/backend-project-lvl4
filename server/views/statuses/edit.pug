@@ -1,0 +1,11 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.statuses.edit.title')
+
+block content
+  .p-5.mb-4.bg-light.rounded-3
+    +formFor()(action=route('editTaskStatusEndpoint', { id: status.id }) method='post')
+      input(name='_method' type='hidden' value='patch')
+      +input(status, 'name', errors, t('views.statuses.name'))(type="text") 
+      +submit(status)(value=t('views.statuses.edit.submit'))

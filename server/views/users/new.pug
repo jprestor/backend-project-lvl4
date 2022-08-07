@@ -6,7 +6,7 @@ block header
 block content
   .p-5.mb-4.bg-light.rounded-3
     +formFor()(action=route('users') method='post')
-      +input(user, 'firstName', errors, t('views.users.firstName'), t('views.users.firstName'))(type="text")
+      +input(user, 'firstName', errors, t('views.users.firstName'))(type="text")
       +input(user, 'lastName', errors, t('views.users.lastName'))(type="text")
       +input(user, 'email', errors, t('views.users.email'))(type="text")
       +input(user, 'password', errors, t('views.users.password'))(type="password")

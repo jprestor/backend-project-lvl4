@@ -19,6 +19,26 @@ export const prepareData = async (app) => {
 
   // получаем данные из фикстур и заполняем БД
   await knex('users').insert(getFixtureData('users.json'));
+  await knex('task_statuses').insert(getFixtureData('taskStatuses.json'));
+};
+
+export const authUser = async (app) => {
+  const testData = getTestData();
+  const user = testData.users.existing;
+
+  // аутентификация
+  const responseSignIn = await app.inject({
+    method: 'POST',
+    url: app.reverse('session'),
+    payload: { data: user },
+  });
+
+  // после успешной аутентификации получаем куки из ответа
+  const [sessionCookie] = responseSignIn.cookies;
+  const { name, value } = sessionCookie;
+  const cookie = { [name]: value };
+
+  return cookie;
 };
 
 export function createRandomUser() {

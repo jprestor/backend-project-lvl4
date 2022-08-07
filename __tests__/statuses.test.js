@@ -1,11 +1,9 @@
-import _ from 'lodash';
 import fastify from 'fastify';
 
 import init from '../server/plugin.js';
-import encrypt from '../server/lib/secure.cjs';
 import { getTestData, prepareData, authUser } from './helpers/index.js'; // createRandomUsers
 
-describe('test users CRUD', () => {
+describe('test statuses CRUD', () => {
   let app;
   let knex;
   let models;
@@ -33,7 +31,8 @@ describe('test users CRUD', () => {
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('users'),
+      url: app.reverse('taskStatuses'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
@@ -42,19 +41,20 @@ describe('test users CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('newUser'),
+      url: app.reverse('newTaskStatus'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
   it('edit', async () => {
-    const params = testData.users.existing;
-    const user = await models.user.query().findOne({ email: params.email });
+    const params = testData.taskStatuses.existing;
+    const status = await models.taskStatus.query().findOne({ name: params.name });
 
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('editUser', { id: user.id }),
+      url: app.reverse('editTaskStatus', { id: status.id }),
       cookies: cookie,
     });
 
@@ -62,64 +62,59 @@ describe('test users CRUD', () => {
   });
 
   it('create', async () => {
-    const params = testData.users.new;
+    const params = testData.taskStatuses.new;
 
     const response = await app.inject({
       method: 'POST',
-      url: app.reverse('users'),
+      url: app.reverse('taskStatuses'),
       payload: {
         data: params,
       },
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
 
-    const expected = {
-      ..._.omit(params, 'password'),
-      passwordDigest: encrypt(params.password),
-    };
-    const user = await models.user.query().findOne({ email: params.email });
-    expect(user).toMatchObject(expected);
+    const status = await models.taskStatus.query().findOne({ name: params.name });
+    expect(status).toMatchObject(params);
   });
 
   it('update', async () => {
-    const params = testData.users.existing;
-    const user = await models.user.query().findOne({ email: params.email });
-    const newFirstName = 'Jane';
+    const params = testData.taskStatuses.existing;
+    const status = await models.taskStatus.query().findOne({ name: params.name });
+    const newStatusName = 'New status';
 
     const response = await app.inject({
       method: 'PATCH',
-      url: app.reverse('editUserEndpoint', { id: user.id }),
+      url: app.reverse('editTaskStatusEndpoint', { id: status.id }),
       payload: {
         data: {
           ...params,
-          firstName: newFirstName,
+          name: newStatusName,
         },
       },
       cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const reFetchedUser = await user.$query();
-    expect(reFetchedUser.firstName).toEqual(newFirstName);
+    const reFetchedStatus = await status.$query();
+    expect(reFetchedStatus.name).toEqual(newStatusName);
   });
 
-  it('delete', async () => {
-    const params = testData.users.existing;
-    const user = await models.user.query().findOne({ email: params.email });
+  // it('delete', async () => {
+  //   const params = testData.taskStatuses.existing;
+  //   const status = await models.taskStatus.query().findOne({ name: params.name });
 
-    const responseDelete = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteUser', { id: user.id }),
-      cookies: cookie,
-    });
+  //   const responseDelete = await app.inject({
+  //     method: 'DELETE',
+  //     url: app.reverse('deleteTaskStatus', { id: status.id }),
+  //     cookies: cookie,
+  //   });
 
-    expect(responseDelete.statusCode).toBe(302);
-
-    const reFetchedUser = await user.$query();
-    expect(reFetchedUser).toBeUndefined();
-  });
+  //   expect(responseDelete.statusCode).toBe(302);
+  //   const reFetchedStatus = await status.$query();
+  //   expect(reFetchedStatus).toBeUndefined();
+  // });
 
   afterEach(async () => {
     // Пока Segmentation fault: 11

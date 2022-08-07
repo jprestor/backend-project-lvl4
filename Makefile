@@ -6,6 +6,9 @@ install:
 db-migrate:
 	npx knex migrate:latest
 
+db-create:
+	npx knex migrate:make $(name)
+
 build:
 	npm run build
 

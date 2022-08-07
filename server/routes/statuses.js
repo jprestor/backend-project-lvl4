@@ -1,0 +1,88 @@
+// @ts-check
+
+import i18next from 'i18next';
+
+export default (app) => {
+  app
+    .get(
+      '/statuses',
+      { name: 'taskStatuses', preValidation: app.authenticate },
+      async (req, reply) => {
+        const statuses = await app.objection.models.taskStatus.query();
+        reply.render('statuses/index', { statuses });
+        return reply;
+      },
+    )
+
+    .get(
+      '/statuses/new',
+      { name: 'newTaskStatus', preValidation: app.authenticate },
+      (req, reply) => {
+        const status = new app.objection.models.taskStatus();
+        reply.render('statuses/new', { status });
+      },
+    )
+
+    .get(
+      '/statuses/:id/edit',
+      { name: 'editTaskStatus', preValidation: app.authenticate },
+      async (req, reply) => {
+        const statusId = req.params.id;
+        const status = await app.objection.models.taskStatus.query().findById(statusId);
+
+        reply.render('statuses/edit', { status });
+        return reply;
+      },
+    )
+
+    .post('/statuses', { preValidation: app.authenticate }, async (req, reply) => {
+      const status = new app.objection.models.taskStatus();
+      status.$set(req.body.data);
+
+      try {
+        const validStatus = await app.objection.models.taskStatus.fromJson(req.body.data);
+        await app.objection.models.taskStatus.query().insert(validStatus);
+        req.flash('info', i18next.t('flash.statuses.create.success'));
+        reply.redirect(app.reverse('taskStatuses'));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.statuses.create.error'));
+        reply.render('statuses/new', { status, errors: data });
+      }
+
+      return reply;
+    })
+
+    .patch(
+      '/statuses/:id',
+      { name: 'editTaskStatusEndpoint', preValidation: app.authenticate },
+      async (req, reply) => {
+        const statusId = req.params.id;
+        const status = await app.objection.models.taskStatus.query().findById(statusId);
+
+        try {
+          const validStatus = await app.objection.models.taskStatus.fromJson(
+            req.body.data,
+          );
+          await status.$query().update(validStatus);
+          req.flash('info', i18next.t('flash.statuses.edit.success'));
+          reply.redirect(app.reverse('taskStatuses'));
+        } catch ({ data }) {
+          req.flash('error', i18next.t('flash.statuses.edit.error'));
+          reply.render('statuses/edit', { status, errors: data });
+        }
+
+        return reply;
+      },
+    )
+
+    .delete(
+      '/statuses/:id',
+      { name: 'deleteTaskStatus', preValidation: app.authenticate },
+      async (req, reply) => {
+        await app.objection.models.taskStatus.query().deleteById(req.params.id);
+        req.flash('info', i18next.t('flash.statuses.delete.success'));
+
+        return reply.redirect(app.reverse('taskStatuses'));
+      },
+    );
+};
