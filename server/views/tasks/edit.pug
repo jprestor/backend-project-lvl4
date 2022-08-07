@@ -1,0 +1,16 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.statuses.edit.title')
+
+block content
+  .p-5.mb-4.bg-light.rounded-3
+    +formFor()(action=route('editTaskEndpoint', { id: task.id }) method='post')
+      input(name='_method' type="hidden" value="patch")
+      +input(task, 'creatorId')(type="hidden")
+      +input(task, 'name', errors, t('views.tasks.name'))(type="text")
+      +input(task, 'description', errors, t('views.tasks.description'), true)
+      +select(task, statuses, 'statusId', errors, t('views.tasks.status'))
+      +select(task, users, 'executorId', errors, t('views.tasks.executor'))
+      //- +input(task, 'labels', errors, t('views.tasks.labels'), true)
+      +submit(task)(value=t('views.tasks.new.submit'))

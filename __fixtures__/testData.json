@@ -13,12 +13,26 @@
       "password": "O6AvLIQL1cbzrre"
     }
   },
-  "taskStatuses": {
+  "statuses": {
     "new": {
       "name": "Testing"
     },
     "existing": {
       "name": "Done"
+    }
+  },
+  "tasks": {
+    "new": {
+      "name": "Add feature",
+      "description": "Add a feature to the app",
+      "statusId": 1,
+      "creatorId": 1
+    },
+    "existing": {
+      "name": "Fix bug",
+      "description": "Fix app bug",
+      "statusId": 1,
+      "creatorId": 1
     }
   }
 }

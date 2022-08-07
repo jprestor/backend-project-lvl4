@@ -5,7 +5,7 @@ import init from '../server/plugin.js';
 import encrypt from '../server/lib/secure.cjs';
 import { getTestData, prepareData, authUser } from './helpers/index.js'; // createRandomUsers
 
-describe('test users CRUD', () => {
+describe('Test users CRUD', () => {
   let app;
   let knex;
   let models;
@@ -13,7 +13,7 @@ describe('test users CRUD', () => {
   const testData = getTestData();
 
   beforeAll(async () => {
-    app = fastify({ logger: { prettyPrint: true } });
+    app = fastify();
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
@@ -100,7 +100,6 @@ describe('test users CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-
     const reFetchedUser = await user.$query();
     expect(reFetchedUser.firstName).toEqual(newFirstName);
   });
@@ -116,7 +115,6 @@ describe('test users CRUD', () => {
     });
 
     expect(responseDelete.statusCode).toBe(302);
-
     const reFetchedUser = await user.$query();
     expect(reFetchedUser).toBeUndefined();
   });

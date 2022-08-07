@@ -81,10 +81,17 @@ export default (app) => {
       { name: 'deleteUser', preValidation: app.authenticate },
       async (req, reply) => {
         const userId = Number(req.params.id);
-        const currentUserId = req.user.id;
+        const currentUser = req.user;
+        const hasTask = await app.objection.models.task
+          .query()
+          .findOne({ executorId: userId });
 
-        if (userId !== currentUserId) {
+        if (userId !== currentUser.id) {
           req.flash('error', i18next.t('flash.accessDenied'));
+          return reply.redirect(app.reverse('users'));
+        }
+        if (hasTask) {
+          req.flash('error', i18next.t('flash.users.delete.error'));
           return reply.redirect(app.reverse('users'));
         }
 

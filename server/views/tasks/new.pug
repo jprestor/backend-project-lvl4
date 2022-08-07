@@ -1,0 +1,14 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.tasks.new.title')
+
+block content
+  .p-5.mb-4.bg-light.rounded-3
+    +formFor()(action=route('tasks') method='post')
+      +input(task, 'name', errors, t('views.tasks.name'))(type="text")
+      +input(task, 'description', errors, t('views.tasks.description'), true)
+      +select(task, statuses, 'statusId', errors, t('views.tasks.status'))
+      +select(task, users, 'executorId', errors, t('views.tasks.executor'))
+      //- +input(task, 'labels', errors, t('views.tasks.labels'), true)
+      +submit(task)(value=t('views.tasks.new.submit'))

@@ -1,9 +1,9 @@
 import fastify from 'fastify';
 
 import init from '../server/plugin.js';
-import { getTestData, prepareData, authUser } from './helpers/index.js'; // createRandomUsers
+import { getTestData, prepareData, authUser } from './helpers/index.js';
 
-describe('test statuses CRUD', () => {
+describe('Test statuses CRUD', () => {
   let app;
   let knex;
   let models;
@@ -11,15 +11,12 @@ describe('test statuses CRUD', () => {
   const testData = getTestData();
 
   beforeAll(async () => {
-    app = fastify({ logger: { prettyPrint: true } });
+    app = fastify();
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
 
     // TODO: пока один раз перед тестами
-    // тесты не должны зависеть друг от друга
-    // перед каждым тестом выполняем миграции
-    // и заполняем БД тестовыми данными
     await knex.migrate.latest();
     await prepareData(app);
   });
@@ -49,7 +46,7 @@ describe('test statuses CRUD', () => {
   });
 
   it('edit', async () => {
-    const params = testData.taskStatuses.existing;
+    const params = testData.statuses.existing;
     const status = await models.taskStatus.query().findOne({ name: params.name });
 
     const response = await app.inject({
@@ -62,7 +59,7 @@ describe('test statuses CRUD', () => {
   });
 
   it('create', async () => {
-    const params = testData.taskStatuses.new;
+    const params = testData.statuses.new;
 
     const response = await app.inject({
       method: 'POST',
@@ -74,13 +71,12 @@ describe('test statuses CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-
     const status = await models.taskStatus.query().findOne({ name: params.name });
     expect(status).toMatchObject(params);
   });
 
   it('update', async () => {
-    const params = testData.taskStatuses.existing;
+    const params = testData.statuses.existing;
     const status = await models.taskStatus.query().findOne({ name: params.name });
     const newStatusName = 'New status';
 
@@ -102,7 +98,7 @@ describe('test statuses CRUD', () => {
   });
 
   // it('delete', async () => {
-  //   const params = testData.taskStatuses.existing;
+  //   const params = testData.statuses.existing;
   //   const status = await models.taskStatus.query().findOne({ name: params.name });
 
   //   const responseDelete = await app.inject({

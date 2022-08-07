@@ -2,13 +2,13 @@ import fastify from 'fastify';
 import init from '../server/plugin.js';
 import { getTestData, prepareData } from './helpers/index.js';
 
-describe('test session', () => {
+describe('Test session', () => {
   let app;
   let knex;
   let testData;
 
   beforeAll(async () => {
-    app = fastify({ logger: { prettyPrint: true } });
+    app = fastify();
     await init(app);
     knex = app.objection.knex;
     await knex.migrate.latest();

@@ -24,6 +24,7 @@ export default {
         },
         delete: {
           success: 'Пользователь успешно удалён',
+          error: 'Не удалось удалить пользователя',
         },
       },
       statuses: {
@@ -37,6 +38,21 @@ export default {
         },
         delete: {
           success: 'Статус успешно удалён',
+          error: 'Не удалось удалить статус',
+        },
+      },
+      tasks: {
+        create: {
+          error: 'Не удалось создать задачу',
+          success: 'Задача успешно создана',
+        },
+        edit: {
+          error: 'Не удалось изменить задачу',
+          success: 'Задача успешно изменена',
+        },
+        delete: {
+          success: 'Задача успешно удалена',
+          error: 'Задачу может удалить только её автор',
         },
       },
       accessDenied: 'Вы не можете редактировать или удалять другого пользователя',
@@ -46,6 +62,8 @@ export default {
       application: {
         users: 'Пользователи',
         statuses: 'Статусы',
+        tasks: 'Задачи',
+        labels: 'Метки',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
@@ -65,12 +83,12 @@ export default {
         firstName: 'Имя',
         lastName: 'Фамилия',
         fullName: 'Полное имя',
+        createdAt: 'Дата создания',
         actions: {
-          label: 'Действия',
+          heading: 'Действия',
           change: 'Изменить',
           delete: 'Удалить',
         },
-        createdAt: 'Дата создания',
         new: {
           signUp: 'Регистрация',
           submit: 'Сохранить',
@@ -83,19 +101,47 @@ export default {
       statuses: {
         id: 'ID',
         name: 'Наименование',
+        createdAt: 'Дата создания',
         actions: {
-          label: 'Действия',
           change: 'Изменить',
           create: 'Создать статус',
           delete: 'Удалить',
         },
-        createdAt: 'Дата создания',
         new: {
           title: 'Создание статуса',
           submit: 'Создать',
         },
         edit: {
           title: 'Изменение статуса',
+          submit: 'Изменить',
+        },
+      },
+      tasks: {
+        id: 'ID',
+        name: 'Наименование',
+        description: 'Описание',
+        status: 'Статус',
+        author: 'Автор',
+        executor: 'Исполнитель',
+        createdAt: 'Дата создания',
+        label: 'Метка',
+        labels: 'Метки',
+        actions: {
+          create: 'Создать задачу',
+          change: 'Изменить',
+          delete: 'Удалить',
+          view: 'Показать',
+          isCreatorUser: 'Только мои задачи',
+        },
+        view: {
+          title: 'Задача',
+        },
+        new: {
+          title: 'Создание задачи',
+          submit: 'Создать',
+        },
+        edit: {
+          title: 'Изменение задачи',
           submit: 'Изменить',
         },
       },

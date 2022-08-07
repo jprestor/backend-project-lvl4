@@ -79,6 +79,14 @@ export default (app) => {
       '/statuses/:id',
       { name: 'deleteTaskStatus', preValidation: app.authenticate },
       async (req, reply) => {
+        const statusId = req.params.id;
+        const hasTask = await app.objection.models.task.query().findOne({ statusId });
+
+        if (hasTask) {
+          req.flash('error', i18next.t('flash.statuses.delete.error'));
+          return reply.redirect(app.reverse('taskStatuses'));
+        }
+
         await app.objection.models.taskStatus.query().deleteById(req.params.id);
         req.flash('info', i18next.t('flash.statuses.delete.success'));
 

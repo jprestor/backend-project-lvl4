@@ -5,21 +5,58 @@ mixin formFor(entity = null)
   form&attributes(attributes)
     block
 
-mixin input(entity, propertyName, errors = {}, label = propertyName)
+mixin input(entity, propertyName, errors = {}, label, isTextarea)
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
+  - inputValue = _.get(entity, propertyName, '')
 
   .mb-3(class=(errors[propertyName] && 'has-danger'))
     label.mb-1(
       for= inputId
     )= label
-    input(
+
+    if isTextarea
+      textarea(
+        id=inputId
+        name=getInputName(propertyName)
+        class=classLine
+        row=3
+      )&attributes(attributes)=inputValue
+
+    else
+      input(
+        id= inputId
+        name=getInputName(propertyName)
+        class=classLine
+        value=inputValue
+      )&attributes(attributes)  
+
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin select(entity, options, propertyName, errors = {}, label,)
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - statusId = getInputId(propertyName)
+
+  .mb-3(class=(errors[propertyName] && 'has-danger'))
+    label.mb-1(
+      for= inputId
+    )= label
+
+    select(
       id= inputId
       name=getInputName(propertyName)
       class=classLine
-      value=_.get(entity, propertyName, '')
     )&attributes(attributes)
+      option
+      each option in options
+        - const name = option.name ? option.name : `${option.firstName} ${option.lastName}`
+        - const isSelected = option.id === entity[propertyName]
+        option(value=option.id selected=isSelected)=name
+
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
