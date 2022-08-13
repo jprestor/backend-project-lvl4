@@ -82,15 +82,18 @@ export default (app) => {
       async (req, reply) => {
         const userId = Number(req.params.id);
         const currentUser = req.user;
-        const hasTask = await app.objection.models.task
-          .query()
-          .findOne({ executorId: userId });
 
         if (userId !== currentUser.id) {
           req.flash('error', i18next.t('flash.accessDenied'));
           return reply.redirect(app.reverse('users'));
         }
-        if (hasTask) {
+
+        const busyTasks = await app.objection.models.task
+          .query()
+          .where({ executorId: userId })
+          .orWhere({ creatorId: userId });
+
+        if (busyTasks.length > 0) {
           req.flash('error', i18next.t('flash.users.delete.error'));
           return reply.redirect(app.reverse('users'));
         }

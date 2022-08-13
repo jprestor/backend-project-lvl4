@@ -3,31 +3,24 @@ import fastify from 'fastify';
 
 import init from '../server/plugin.js';
 import encrypt from '../server/lib/secure.cjs';
-import { getTestData, prepareData, authUser } from './helpers/index.js'; // createRandomUsers
+import { prepareData, authUser } from './helpers/index.js';
 
 describe('Test users CRUD', () => {
   let app;
   let knex;
   let models;
-  let cookie;
-  const testData = getTestData();
+  let testData;
 
   beforeAll(async () => {
     app = fastify();
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
-
-    // TODO: пока один раз перед тестами
-    // тесты не должны зависеть друг от друга
-    // перед каждым тестом выполняем миграции
-    // и заполняем БД тестовыми данными
     await knex.migrate.latest();
-    await prepareData(app);
   });
 
   beforeEach(async () => {
-    cookie = await authUser(app);
+    testData = await prepareData(app);
   });
 
   it('index', async () => {
@@ -49,8 +42,9 @@ describe('Test users CRUD', () => {
   });
 
   it('edit', async () => {
-    const params = testData.users.existing;
+    const params = testData.users.existing.creator;
     const user = await models.user.query().findOne({ email: params.email });
+    const cookie = await authUser(app, params);
 
     const response = await app.inject({
       method: 'GET',
@@ -83,9 +77,10 @@ describe('Test users CRUD', () => {
   });
 
   it('update', async () => {
-    const params = testData.users.existing;
+    const params = testData.users.existing.creator;
     const user = await models.user.query().findOne({ email: params.email });
-    const newFirstName = 'Jane';
+    const newEmail = 'new@example.com';
+    const cookie = await authUser(app, params);
 
     const response = await app.inject({
       method: 'PATCH',
@@ -93,7 +88,7 @@ describe('Test users CRUD', () => {
       payload: {
         data: {
           ...params,
-          firstName: newFirstName,
+          firstName: newEmail,
         },
       },
       cookies: cookie,
@@ -101,12 +96,13 @@ describe('Test users CRUD', () => {
 
     expect(response.statusCode).toBe(302);
     const reFetchedUser = await user.$query();
-    expect(reFetchedUser.firstName).toEqual(newFirstName);
+    expect(reFetchedUser.firstName).toEqual(newEmail);
   });
 
   it('delete', async () => {
-    const params = testData.users.existing;
+    const params = testData.users.existing.free;
     const user = await models.user.query().findOne({ email: params.email });
+    const cookie = await authUser(app, params);
 
     const responseDelete = await app.inject({
       method: 'DELETE',
@@ -120,9 +116,9 @@ describe('Test users CRUD', () => {
   });
 
   afterEach(async () => {
-    // Пока Segmentation fault: 11
-    // после каждого теста откатываем миграции
-    // await knex.migrate.rollback();
+    await models.user.query().truncate();
+    await models.taskStatus.query().truncate();
+    await models.task.query().truncate();
   });
 
   afterAll(async () => {

@@ -1,28 +1,26 @@
 import fastify from 'fastify';
 
 import init from '../server/plugin.js';
-import { getTestData, prepareData, authUser } from './helpers/index.js';
+import { prepareData, authUser } from './helpers/index.js';
 
 describe('Test statuses CRUD', () => {
   let app;
   let knex;
   let models;
   let cookie;
-  const testData = getTestData();
+  let testData;
 
   beforeAll(async () => {
     app = fastify();
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
-
-    // TODO: пока один раз перед тестами
     await knex.migrate.latest();
-    await prepareData(app);
   });
 
   beforeEach(async () => {
-    cookie = await authUser(app);
+    testData = await prepareData(app);
+    cookie = await authUser(app, testData.users.existing.creator);
   });
 
   it('index', async () => {
@@ -46,7 +44,7 @@ describe('Test statuses CRUD', () => {
   });
 
   it('edit', async () => {
-    const params = testData.statuses.existing;
+    const params = testData.statuses.existing.free;
     const status = await models.taskStatus.query().findOne({ name: params.name });
 
     const response = await app.inject({
@@ -76,7 +74,7 @@ describe('Test statuses CRUD', () => {
   });
 
   it('update', async () => {
-    const params = testData.statuses.existing;
+    const params = testData.statuses.existing.free;
     const status = await models.taskStatus.query().findOne({ name: params.name });
     const newStatusName = 'New status';
 
@@ -97,25 +95,25 @@ describe('Test statuses CRUD', () => {
     expect(reFetchedStatus.name).toEqual(newStatusName);
   });
 
-  // it('delete', async () => {
-  //   const params = testData.statuses.existing;
-  //   const status = await models.taskStatus.query().findOne({ name: params.name });
+  it('delete', async () => {
+    const params = testData.statuses.existing.free;
+    const status = await models.taskStatus.query().findOne({ name: params.name });
 
-  //   const responseDelete = await app.inject({
-  //     method: 'DELETE',
-  //     url: app.reverse('deleteTaskStatus', { id: status.id }),
-  //     cookies: cookie,
-  //   });
+    const responseDelete = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteTaskStatus', { id: status.id }),
+      cookies: cookie,
+    });
 
-  //   expect(responseDelete.statusCode).toBe(302);
-  //   const reFetchedStatus = await status.$query();
-  //   expect(reFetchedStatus).toBeUndefined();
-  // });
+    expect(responseDelete.statusCode).toBe(302);
+    const reFetchedStatus = await status.$query();
+    expect(reFetchedStatus).toBeUndefined();
+  });
 
   afterEach(async () => {
-    // Пока Segmentation fault: 11
-    // после каждого теста откатываем миграции
-    // await knex.migrate.rollback();
+    await models.user.query().truncate();
+    await models.taskStatus.query().truncate();
+    await models.task.query().truncate();
   });
 
   afterAll(async () => {

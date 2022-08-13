@@ -62,6 +62,7 @@ export default (app) => {
       const task = new app.objection.models.task();
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
+
       const data = {
         ...req.body.data,
         statusId: _.toInteger(req.body.data.statusId) || null,
@@ -72,11 +73,12 @@ export default (app) => {
       task.$set(data);
 
       try {
-        const validStatus = await app.objection.models.task.fromJson(data);
-        await app.objection.models.task.query().insert(validStatus);
+        const validTask = await app.objection.models.task.fromJson(data);
+        await app.objection.models.task.query().insert(validTask);
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch ({ errorData }) {
+        console.log('isError');
         req.flash('error', i18next.t('flash.tasks.create.error'));
         reply.render('tasks/new', { task, errors: errorData, statuses, users });
       }
@@ -100,9 +102,8 @@ export default (app) => {
         };
 
         try {
-          const validStatus = await app.objection.models.task.fromJson(data);
-          await task.$query().update(validStatus);
-          console.log('validStatus', validStatus);
+          const validTask = await app.objection.models.task.fromJson(data);
+          await task.$query().update(validTask);
           req.flash('info', i18next.t('flash.tasks.edit.success'));
           reply.redirect(app.reverse('tasks'));
         } catch ({ errorData }) {

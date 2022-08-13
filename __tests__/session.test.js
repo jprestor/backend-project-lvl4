@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import init from '../server/plugin.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import { prepareData } from './helpers/index.js';
 
 describe('Test session', () => {
   let app;
@@ -12,8 +12,7 @@ describe('Test session', () => {
     await init(app);
     knex = app.objection.knex;
     await knex.migrate.latest();
-    await prepareData(app);
-    testData = getTestData();
+    testData = await prepareData(app);
   });
 
   it('test sign in / sign out', async () => {
@@ -28,7 +27,7 @@ describe('Test session', () => {
       method: 'POST',
       url: app.reverse('session'),
       payload: {
-        data: testData.users.existing,
+        data: testData.users.existing.creator,
       },
     });
 
