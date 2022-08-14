@@ -31,4 +31,5 @@ export const production = {
   connection: process.env.DATABASE_URL,
   useNullAsDefault: true,
   migrations,
+  ssl: true,
 };
