@@ -3,7 +3,7 @@ import { describe, beforeAll, it, expect } from '@jest/globals';
 import fastify from 'fastify';
 import init from '../server/plugin.js';
 
-describe('Test requests', () => {
+describe('test requests', () => {
   let app;
 
   beforeAll(async () => {

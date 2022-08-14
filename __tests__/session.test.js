@@ -2,7 +2,7 @@ import fastify from 'fastify';
 import init from '../server/plugin.js';
 import { prepareData } from './helpers/index.js';
 
-describe('Test session', () => {
+describe('test session', () => {
   let app;
   let knex;
   let testData;

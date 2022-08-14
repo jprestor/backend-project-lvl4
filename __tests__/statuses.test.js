@@ -3,7 +3,7 @@ import fastify from 'fastify';
 import init from '../server/plugin.js';
 import { prepareData, authUser } from './helpers/index.js';
 
-describe('Test statuses CRUD', () => {
+describe('test statuses CRUD', () => {
   let app;
   let knex;
   let models;
@@ -114,6 +114,8 @@ describe('Test statuses CRUD', () => {
     await models.user.query().truncate();
     await models.taskStatus.query().truncate();
     await models.task.query().truncate();
+    await models.label.query().truncate();
+    await models.labelTask.query().truncate();
   });
 
   afterAll(async () => {

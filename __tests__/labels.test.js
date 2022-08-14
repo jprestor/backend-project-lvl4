@@ -3,7 +3,7 @@ import fastify from 'fastify';
 import init from '../server/plugin.js';
 import { prepareData, authUser } from './helpers/index.js';
 
-describe('test tasks CRUD', () => {
+describe('test labels CRUD', () => {
   let app;
   let knex;
   let models;
@@ -26,7 +26,7 @@ describe('test tasks CRUD', () => {
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('tasks'),
+      url: app.reverse('labels'),
       cookies: cookie,
     });
 
@@ -36,19 +36,7 @@ describe('test tasks CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('newTask'),
-      cookies: cookie,
-    });
-    expect(response.statusCode).toBe(200);
-  });
-
-  it('view', async () => {
-    const params = testData.tasks.existing;
-    const task = await models.task.query().findOne({ name: params.name });
-
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('viewTask', { id: task.id }),
+      url: app.reverse('newLabel'),
       cookies: cookie,
     });
 
@@ -56,22 +44,24 @@ describe('test tasks CRUD', () => {
   });
 
   it('edit', async () => {
-    const params = testData.tasks.existing;
-    const task = await models.task.query().findOne({ name: params.name });
+    const params = testData.labels.existing.free;
+    const label = await models.label.query().findOne({ name: params.name });
+
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('editTask', { id: task.id }),
+      url: app.reverse('editLabel', { id: label.id }),
       cookies: cookie,
     });
+
     expect(response.statusCode).toBe(200);
   });
 
   it('create', async () => {
-    const params = testData.tasks.new;
+    const params = testData.labels.new;
 
     const response = await app.inject({
       method: 'POST',
-      url: app.reverse('tasks'),
+      url: app.reverse('labels'),
       payload: {
         data: params,
       },
@@ -79,45 +69,45 @@ describe('test tasks CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    const task = await models.task.query().findOne({ name: params.name });
-    expect(task).toMatchObject(params);
+    const status = await models.label.query().findOne({ name: params.name });
+    expect(status).toMatchObject(params);
   });
 
   it('update', async () => {
-    const params = testData.tasks.existing;
-    const task = await models.task.query().findOne({ name: params.name });
-    const newTaskName = 'New task name';
+    const params = testData.labels.existing.free;
+    const status = await models.label.query().findOne({ name: params.name });
+    const newStatusName = 'New status';
 
     const response = await app.inject({
       method: 'PATCH',
-      url: app.reverse('editTaskEndpoint', { id: task.id }),
+      url: app.reverse('editLabelEndpoint', { id: status.id }),
       payload: {
         data: {
           ...params,
-          name: newTaskName,
+          name: newStatusName,
         },
       },
       cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-    const reFetchedTask = await task.$query();
-    expect(reFetchedTask.name).toEqual(newTaskName);
+    const reFetchedStatus = await status.$query();
+    expect(reFetchedStatus.name).toEqual(newStatusName);
   });
 
   it('delete', async () => {
-    const params = testData.tasks.existing;
-    const task = await models.task.query().findOne({ name: params.name });
+    const params = testData.labels.existing.free;
+    const label = await models.label.query().findOne({ name: params.name });
 
     const responseDelete = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteTask', { id: task.id }),
+      url: app.reverse('deleteLabel', { id: label.id }),
       cookies: cookie,
     });
 
     expect(responseDelete.statusCode).toBe(302);
-    const reFetchedTask = await task.$query();
-    expect(reFetchedTask).toBeUndefined();
+    const reFetchedStatus = await label.$query();
+    expect(reFetchedStatus).toBeUndefined();
   });
 
   afterEach(async () => {

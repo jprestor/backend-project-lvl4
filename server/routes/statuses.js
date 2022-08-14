@@ -87,7 +87,7 @@ export default (app) => {
           return reply.redirect(app.reverse('taskStatuses'));
         }
 
-        await app.objection.models.taskStatus.query().deleteById(req.params.id);
+        await app.objection.models.taskStatus.query().deleteById(statusId);
         req.flash('info', i18next.t('flash.statuses.delete.success'));
 
         return reply.redirect(app.reverse('taskStatuses'));

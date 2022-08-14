@@ -5,7 +5,7 @@ import init from '../server/plugin.js';
 import encrypt from '../server/lib/secure.cjs';
 import { prepareData, authUser } from './helpers/index.js';
 
-describe('Test users CRUD', () => {
+describe('test users CRUD', () => {
   let app;
   let knex;
   let models;
@@ -119,6 +119,8 @@ describe('Test users CRUD', () => {
     await models.user.query().truncate();
     await models.taskStatus.query().truncate();
     await models.task.query().truncate();
+    await models.label.query().truncate();
+    await models.labelTask.query().truncate();
   });
 
   afterAll(async () => {
