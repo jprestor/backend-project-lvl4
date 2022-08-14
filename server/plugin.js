@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from 'fastify-static';
 import fastifyErrorPage from 'fastify-error-page';
+import Rollbar from 'rollbar';
 
 import pointOfView from 'point-of-view';
 import fastifyFormbody from 'fastify-formbody';
@@ -116,6 +117,13 @@ const registerPlugins = (app) => {
 
 // eslint-disable-next-line no-unused-vars
 export default async (app, options) => {
+  const rollbar = new Rollbar({
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+  rollbar.log('Hello rollbar!');
+
   registerPlugins(app);
 
   await setupLocalization();
