@@ -71,6 +71,8 @@ const addHooks = (app) => {
     reply.locals = {
       isAuthenticated: () => req.isAuthenticated(),
     };
+
+    req.query = qs.parse(req.query);
   });
 };
 

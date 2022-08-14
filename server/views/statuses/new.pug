@@ -7,4 +7,4 @@ block content
   .p-5.mb-4.bg-light.rounded-3
     +formFor()(action=route('taskStatuses') method='post')
       +input(status, 'name', errors, t('views.statuses.name'))(type="text")
-      +submit(status)(value=t('views.statuses.new.submit'))
+      +submit()(value=t('views.statuses.new.submit'))

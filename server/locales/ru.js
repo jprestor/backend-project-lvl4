@@ -140,12 +140,12 @@ export default {
         createdAt: 'Дата создания',
         label: 'Метка',
         labels: 'Метки',
+        isCreatorUser: 'Только мои задачи',
         actions: {
           create: 'Создать задачу',
           change: 'Изменить',
           delete: 'Удалить',
           view: 'Показать',
-          isCreatorUser: 'Только мои задачи',
         },
         view: {
           title: 'Задача',

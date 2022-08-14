@@ -11,15 +11,6 @@ export default (app) => ({
     return i18next.t(key);
   },
   _,
-  getTaskStatus(statuses, refId) {
-    const status = _.find(statuses, ({ id }) => id === refId);
-    return status.name;
-  },
-  getUserName(users, refId) {
-    const user = _.find(users, ({ id }) => id === refId);
-    const { firstName, lastName } = user;
-    return `${firstName} ${lastName}`;
-  },
   getAlertClass(type) {
     switch (type) {
       // case 'failure':

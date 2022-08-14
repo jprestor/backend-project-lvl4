@@ -13,4 +13,4 @@ block content
       +select(statuses, 'statusId', selected, errors, t('views.tasks.status'))
       +select(users, 'executorId', selected, errors, t('views.tasks.executor'))
       +select(labels, 'labels', selected, errors, t('views.tasks.labels'), true)
-      +submit(task)(value=t('views.tasks.edit.submit'))
+      +submit()(value=t('views.tasks.edit.submit'))

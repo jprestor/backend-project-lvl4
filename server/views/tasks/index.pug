@@ -6,7 +6,20 @@ block header
 block content
   a.btn.btn-primary.btn-lg.mb-4(href=route('newTask'))= t('views.tasks.actions.create')
 
-  table.table.table-striped
+  .card.shadow-sm 
+    .card-body.p4
+       +formFor()(action=route('tasks') method='get')
+        .row 
+          .col-12.col-md
+            +filterSelect(statuses, 'status', selected, t('views.tasks.status'))
+          .col-12.col-md
+            +filterSelect(users, 'executor', selected, t('views.tasks.executor'))
+          .col-12.col-md
+            +filterSelect(labels, 'label', selected, t('views.tasks.label'))
+        +checkbox('isCreatorUser', selected, t('views.tasks.isCreatorUser'))
+        +submit()(value=t('views.tasks.actions.view')) 
+
+  table.table.table-striped.mt-5
     thead
       tr
         th= t('views.tasks.id')
@@ -17,18 +30,19 @@ block content
         th= t('views.tasks.createdAt')
     tbody
       each task in tasks
+        - const { status, creator, executor } = task
         tr
           td= task.id
           td 
             a(href=route('viewTask', { id: task.id }))= task.name
-          td= getTaskStatus(statuses, task.statusId)
-          td= getUserName(users, task.creatorId)
-          td= getUserName(users, task.executorId)
+          td= status.name
+          td= `${creator.firstName} ${creator.lastName}`
+          td= `${executor.firstName} ${executor.lastName}`
           td= formatDate(task.createdAt)
           td
             .d-flex.flex-wrap
               a.btn.btn-primary.me-1(href=route('editTask', { id: task.id }))= t('views.tasks.actions.change')
               +formFor()(action=route('deleteTask', { id: task.id }) method='post')
                 input(name='_method' type='hidden' value='delete')
-                +submit(status)(class="btn-danger" value=t('views.tasks.actions.delete'))
+                +submit()(class="btn-danger" value=t('views.tasks.actions.delete'))
 

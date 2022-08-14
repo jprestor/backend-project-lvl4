@@ -23,5 +23,5 @@ block content
               a.btn.btn-primary.me-1(href=route('editTaskStatus', { id: status.id }))= t('views.statuses.actions.change')
               +formFor()(action=route('deleteTaskStatus', { id: status.id }) method='post')
                 input(name='_method' type='hidden' value='delete')
-                +submit(status)(class="btn-danger" value=t('views.statuses.actions.delete'))
+                +submit()(class="btn-danger" value=t('views.statuses.actions.delete'))
 

@@ -8,12 +8,34 @@ export default (app) => {
       '/tasks',
       { name: 'tasks', preValidation: app.authenticate },
       async (req, reply) => {
-        const tasks = await app.objection.models.task.query();
-        const statuses = await app.objection.models.taskStatus.query();
-        const users = await app.objection.models.user.query();
+        const { models } = app.objection;
+        const query = req.query.data;
+        const { status, executor, label, isCreatorUser } = query || {};
 
-        reply.render('tasks/index', { tasks, statuses, users });
-        return reply;
+        let tasks = await models.task
+          .query()
+          .withGraphJoined('[status, executor, creator, labels]');
+
+        if (status) {
+          tasks = tasks.filter(({ statusId }) => statusId === _.toInteger(status));
+        }
+        if (executor) {
+          tasks = tasks.filter(({ executorId }) => executorId === _.toInteger(executor));
+        }
+        if (label) {
+          tasks = tasks.filter(({ labels }) =>
+            labels.some((taskLabel) => taskLabel.id === _.toInteger(label)),
+          );
+        }
+        if (isCreatorUser) {
+          tasks = tasks.filter(({ creatorId }) => creatorId === req.user.id);
+        }
+
+        const statuses = await models.taskStatus.query();
+        const users = await models.user.query();
+        const labels = await models.label.query();
+
+        reply.render('tasks/index', { tasks, statuses, users, labels, selected: query });
       },
     )
 
@@ -22,7 +44,6 @@ export default (app) => {
       { name: 'newTask', preValidation: app.authenticate },
       async (req, reply) => {
         const { models } = app.objection;
-
         const task = new models.task();
         const statuses = await models.taskStatus.query();
         const users = await models.user.query();
@@ -65,7 +86,6 @@ export default (app) => {
       { name: 'editTask', preValidation: app.authenticate },
       async (req, reply) => {
         const { models } = app.objection;
-
         const taskId = req.params.id;
         const task = await models.task.query().findById(taskId);
         const statuses = await models.taskStatus.query();
@@ -93,7 +113,6 @@ export default (app) => {
 
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
       const { models } = app.objection;
-
       const task = new models.task();
       const statuses = await models.taskStatus.query();
       const users = await models.user.query();
@@ -153,7 +172,6 @@ export default (app) => {
       { name: 'editTaskEndpoint', preValidation: app.authenticate },
       async (req, reply) => {
         const { models } = app.objection;
-
         const taskId = _.toInteger(req.params.id);
         const task = await models.task.query().findById(taskId);
         const statuses = await models.taskStatus.query();

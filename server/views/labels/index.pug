@@ -23,5 +23,5 @@ block content
               a.btn.btn-primary.me-1(href=route('editLabel', { id: label.id }))= t('views.labels.actions.change')
               +formFor()(action=route('deleteLabel', { id: label.id }) method='post')
                 input(name='_method' type='hidden' value='delete')
-                +submit(label)(class="btn-danger" value=t('views.labels.actions.delete'))
+                +submit()(class="btn-danger" value=t('views.labels.actions.delete'))
 

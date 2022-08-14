@@ -7,4 +7,4 @@ block content
   .p-5.mb-4.bg-light.rounded-3
     +formFor()(action=route('labels') method='post')
       +input(label, 'name', errors, t('views.labels.name'))(type="text")
-      +submit(label)(value=t('views.labels.new.submit'))
+      +submit()(value=t('views.labels.new.submit'))

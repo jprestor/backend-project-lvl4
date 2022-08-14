@@ -39,7 +39,6 @@ mixin select(options, propertyName, selected = {}, errors = {}, label, multiple)
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
-  - statusId = getInputId(propertyName)
 
   .mb-3(class=(errors[propertyName] && 'has-danger'))
     label.mb-1(
@@ -61,6 +60,37 @@ mixin select(options, propertyName, selected = {}, errors = {}, label, multiple)
 
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin filterSelect(options = [], propertyName, selected = {}, label)
+  - inputId = getInputId(propertyName)
+
+  .input-group.mb-3
+    label.input-group-text(for=inputId)=label
+
+    select.form-select(
+      id= inputId
+      name=getInputName(propertyName)
+    )&attributes(attributes)
+      option
+      each option in options
+        - const name = option.name ? option.name : `${option.firstName} ${option.lastName}`
+        - const isSelected = selected[propertyName]?.includes?.(option.id)
+        option(value=option.id selected=isSelected)=name
+
+
+mixin checkbox(propertyName, selected = {}, label)
+  - inputId = getInputId(propertyName)
+  - isChecked = selected[propertyName]
+
+  .mb-3.form-check
+    input(
+      id=inputId 
+      name=getInputName(propertyName)
+      class='form-check-input' 
+      type='checkbox' 
+      checked=isChecked
+    )
+    label.form-check-label(for=inputId)=label
 
 mixin submit(form = null)
   input(class='btn btn-primary' type='submit')&attributes(attributes)
