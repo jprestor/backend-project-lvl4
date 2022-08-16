@@ -122,6 +122,7 @@ export default async (app, options) => {
     captureUncaught: true,
     captureUnhandledRejections: true,
   });
+
   rollbar.log('Hello rollbar!');
 
   registerPlugins(app);
