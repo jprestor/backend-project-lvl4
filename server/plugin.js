@@ -74,7 +74,7 @@ const setupErrorHandler = (app) => {
     captureUnhandledRejections: true,
   });
 
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error) => {
     rollbar.error(error);
   });
 
