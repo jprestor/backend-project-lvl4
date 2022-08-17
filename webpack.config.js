@@ -14,5 +14,23 @@ export default {
       },
     ],
   },
+  output: {
+    libraryExport: 'default',
+  },
   plugins: [new MiniCssExtractPlugin()], // new NodePolyfillPlugin()
+  resolve: {
+    fallback: {
+      fs: false,
+      path: false,
+      http: false,
+      https: false,
+      crypto: false,
+      timers: false,
+      stream: false,
+      os: false,
+      console: false,
+      url: false,
+      tty: false,
+    },
+  },
 };

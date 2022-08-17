@@ -1,9 +1,9 @@
 // @ts-check
 
 import path from 'path';
-import { fileURLToPath } from 'url';
+import url from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const migrations = {
   directory: path.join(__dirname, 'server', 'migrations'),
