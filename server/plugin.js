@@ -83,7 +83,7 @@ const registerPlugins = async (app) => {
     captureUncaught: true,
     captureUnhandledRejections: true,
   });
-  rollbar.log('Hello rollbar! 101010');
+  rollbar.log('Hello rollbar!');
 
   app.register(fastifySensible);
   app.register(fastifyErrorPage);
