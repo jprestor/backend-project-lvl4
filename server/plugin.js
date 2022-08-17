@@ -77,7 +77,14 @@ const addHooks = (app) => {
   });
 };
 
-const registerPlugins = (app) => {
+const registerPlugins = async (app) => {
+  const rollbar = new Rollbar({
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+  rollbar.log('Hello rollbar! 101010');
+
   app.register(fastifySensible);
   app.register(fastifyErrorPage);
   app.register(fastifyReverseRoutes);
@@ -117,13 +124,6 @@ const registerPlugins = (app) => {
 
 // eslint-disable-next-line no-unused-vars
 export default async (app, options) => {
-  const rollbar = new Rollbar({
-    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-  });
-  rollbar.log('Hello rollbar!');
-
   registerPlugins(app);
 
   await setupLocalization();
