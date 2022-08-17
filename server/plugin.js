@@ -67,6 +67,20 @@ const setupLocalization = async () => {
   });
 };
 
+const setupErrorHandler = (app) => {
+  const rollbar = new Rollbar({
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+
+  app.setErrorHandler((error, request, reply) => {
+    rollbar.error(error);
+  });
+
+  return app;
+};
+
 const addHooks = (app) => {
   app.addHook('preHandler', async (req, reply) => {
     reply.locals = {
@@ -78,13 +92,6 @@ const addHooks = (app) => {
 };
 
 const registerPlugins = async (app) => {
-  const rollbar = new Rollbar({
-    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-  });
-  rollbar.log('Hello rollbar!');
-
   app.register(fastifySensible);
   app.register(fastifyErrorPage);
   app.register(fastifyReverseRoutes);
@@ -131,6 +138,7 @@ export default async (app, options) => {
   setUpStaticAssets(app);
   addRoutes(app);
   addHooks(app);
+  setupErrorHandler(app);
 
   return app;
 };
