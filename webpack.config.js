@@ -14,9 +14,6 @@ export default {
       },
     ],
   },
-  output: {
-    libraryExport: 'default',
-  },
   plugins: [new MiniCssExtractPlugin()], // new NodePolyfillPlugin()
   resolve: {
     fallback: {
