@@ -1,4 +1,5 @@
 const { Model } = require('objection');
+const _ = require('lodash');
 
 const BaseModel = require('./BaseModel.cjs');
 const TaskStatus = require('./TaskStatus.cjs');
@@ -23,6 +24,25 @@ module.exports = class Task extends BaseModel {
       },
     };
   }
+
+  static modifiers = {
+    async filter(query, filterParams, userId) {
+      const { status, executor, label, isCreatorUser } = filterParams;
+
+      if (status) {
+        query.where({ statusId: _.toInteger(status) });
+      }
+      if (executor) {
+        query.andWhere({ executorId: _.toInteger(executor) });
+      }
+      if (label) {
+        query.andWhere('labels.id', _.toInteger(label));
+      }
+      if (isCreatorUser) {
+        query.andWhere({ creatorId: userId });
+      }
+    },
+  };
 
   // This object defines the relations to other models.
   static get relationMappings() {

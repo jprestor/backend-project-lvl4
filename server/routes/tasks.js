@@ -10,27 +10,11 @@ export default (app) => {
       async (req, reply) => {
         const { models } = app.objection;
         const query = req.query.data;
-        const { status, executor, label, isCreatorUser } = query || {};
-
-        let tasks = await models.task
+        const userId = req.user.id;
+        const tasks = await models.task
           .query()
-          .withGraphJoined('[status, executor, creator, labels]');
-
-        if (status) {
-          tasks = tasks.filter(({ statusId }) => statusId === _.toInteger(status));
-        }
-        if (executor) {
-          tasks = tasks.filter(({ executorId }) => executorId === _.toInteger(executor));
-        }
-        if (label) {
-          tasks = tasks.filter(({ labels }) =>
-            labels.some((taskLabel) => taskLabel.id === _.toInteger(label)),
-          );
-        }
-        if (isCreatorUser) {
-          tasks = tasks.filter(({ creatorId }) => creatorId === req.user.id);
-        }
-
+          .withGraphJoined('[status, executor, creator, labels]')
+          .modify('filter', query, userId);
         const statuses = await models.taskStatus.query();
         const users = await models.user.query();
         const labels = await models.label.query();
