@@ -100,24 +100,24 @@ export default (app) => {
       const { models } = app.objection;
       const { data } = req.body;
       const creatorId = req.user.id;
-      const task = new models.task();
       const statuses = await models.taskStatus.query();
       const users = await models.user.query();
       const labels = await models.label.query();
-      task.$set(data);
 
       try {
         const validTask = await models.task.fromJson({ ...data, creatorId });
+        const selectedLabels = [...data.labels]
+          .map((id) => _.toInteger(id))
+          .map((id) => ({ id }));
 
         await models.task.transaction(async (trx) => {
-          const selectedLabels = _.flatten([data.labels])
-            .map((id) => _.toInteger(id))
-            .map((id) => ({ id }));
-
-          await models.task.query(trx).upsertGraph({
-            ...validTask,
-            labels: selectedLabels,
-          });
+          await models.task.query(trx).upsertGraph(
+            {
+              ...validTask,
+              labels: selectedLabels,
+            },
+            { relate: true, unrelate: true },
+          );
         });
 
         req.flash('info', i18next.t('flash.tasks.create.success'));
@@ -125,8 +125,8 @@ export default (app) => {
       } catch ({ data: errors }) {
         req.flash('error', i18next.t('flash.tasks.create.error'));
         reply.render('tasks/new', {
-          task,
-          errors: {},
+          task: data,
+          errors,
           statuses,
           users,
           labels,
@@ -151,12 +151,9 @@ export default (app) => {
 
         try {
           const validTask = await models.task.fromJson(data);
-
-          // const options = { relate: true, unrelate: true };
-          const selectedLabels = _.flatten([data.labels])
+          const selectedLabels = [...data.labels]
             .map((id) => _.toInteger(id))
             .map((id) => ({ id }));
-          console.log('selectedLabels', selectedLabels);
 
           await models.task.transaction(async (trx) => {
             await models.task
@@ -167,7 +164,7 @@ export default (app) => {
                   ...validTask,
                   labels: selectedLabels,
                 },
-                // options,
+                { relate: true, unrelate: true },
               )
               .debug();
           });

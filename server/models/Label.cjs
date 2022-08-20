@@ -18,12 +18,10 @@ module.exports = class Label extends BaseModel {
   }
 
   static get relationMappings() {
-    const Task = require('./Task.cjs');
-
     return {
       tasks: {
         relation: Model.ManyToManyRelation,
-        modelClass: Task,
+        modelClass: 'Task',
         join: {
           from: 'labels.id',
           through: {
