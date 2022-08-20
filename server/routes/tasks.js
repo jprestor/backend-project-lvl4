@@ -98,42 +98,27 @@ export default (app) => {
 
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
       const { models } = app.objection;
+      const { data } = req.body;
+      const creatorId = req.user.id;
       const task = new models.task();
       const statuses = await models.taskStatus.query();
       const users = await models.user.query();
       const labels = await models.label.query();
-
-      const data = {
-        ..._.omit(req.body.data, 'labels'),
-        statusId: _.toInteger(req.body.data.statusId) || null,
-        executorId: _.toInteger(req.body.data.executorId) || null,
-        creatorId: req.user.id,
-      };
       task.$set(data);
 
-      const selectedLabels = _.map(_.flatten([req.body.data.labels]), _.toInteger);
-      const selected = {
-        statusId: [data.statusId],
-        executorId: [data.executorId],
-        labels: selectedLabels,
-      };
-
       try {
-        const validTask = await models.task.fromJson(data);
+        const validTask = await models.task.fromJson({ ...data, creatorId });
 
-        if (selectedLabels) {
-          await models.task.transaction(async (trx) => {
-            const newTask = await models.task.query(trx).insert(validTask);
+        await models.task.transaction(async (trx) => {
+          const selectedLabels = _.flatten([data.labels])
+            .map((id) => _.toInteger(id))
+            .map((id) => ({ id }));
 
-            await Promise.all(
-              selectedLabels.map((labelId) =>
-                models.labelTask.query(trx).insert({ taskId: newTask.id, labelId }),
-              ),
-            );
+          await models.task.query(trx).upsertGraph({
+            ...validTask,
+            labels: selectedLabels,
           });
-        } else {
-          await models.task.query().insert(validTask);
-        }
+        });
 
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
@@ -141,11 +126,11 @@ export default (app) => {
         req.flash('error', i18next.t('flash.tasks.create.error'));
         reply.render('tasks/new', {
           task,
-          errors,
+          errors: {},
           statuses,
           users,
           labels,
-          selected,
+          selected: data,
         });
       }
 
@@ -157,47 +142,35 @@ export default (app) => {
       { name: 'editTaskEndpoint', preValidation: app.authenticate },
       async (req, reply) => {
         const { models } = app.objection;
+        const { data } = req.body;
         const taskId = _.toInteger(req.params.id);
         const task = await models.task.query().findById(taskId);
         const statuses = await models.taskStatus.query();
         const users = await models.user.query();
         const labels = await models.label.query();
 
-        const data = {
-          ..._.omit(req.body.data, 'labels'),
-          statusId: _.toInteger(req.body.data.statusId) || null,
-          executorId: _.toInteger(req.body.data.executorId) || null,
-          creatorId: _.toInteger(req.body.data.creatorId) || null,
-        };
-
-        const selectedLabels = _.map(_.flatten([req.body.data.labels]), _.toInteger);
-        const selected = {
-          statusId: [data.statusId],
-          executorId: [data.executorId],
-          labels: selectedLabels,
-        };
-
         try {
           const validTask = await models.task.fromJson(data);
 
-          if (selectedLabels) {
-            await models.task.transaction(async (trx) => {
-              await task.$query(trx).update(validTask);
-              const taskLabels = await models.labelTask.query(trx).where({ taskId });
+          // const options = { relate: true, unrelate: true };
+          const selectedLabels = _.flatten([data.labels])
+            .map((id) => _.toInteger(id))
+            .map((id) => ({ id }));
+          console.log('selectedLabels', selectedLabels);
 
-              await Promise.all(
-                taskLabels.map((taskLabel) => taskLabel.$query(trx).delete()),
-              );
-
-              await Promise.all(
-                selectedLabels.map((selectedLabel) =>
-                  models.labelTask.query(trx).insert({ labelId: selectedLabel, taskId }),
-                ),
-              );
-            });
-          } else {
-            await task.$query().update(validTask);
-          }
+          await models.task.transaction(async (trx) => {
+            await models.task
+              .query(trx)
+              .upsertGraph(
+                {
+                  id: taskId,
+                  ...validTask,
+                  labels: selectedLabels,
+                },
+                // options,
+              )
+              .debug();
+          });
 
           req.flash('info', i18next.t('flash.tasks.edit.success'));
           reply.redirect(app.reverse('tasks'));
@@ -209,7 +182,7 @@ export default (app) => {
             statuses,
             users,
             labels,
-            selected,
+            selected: data,
           });
         }
 

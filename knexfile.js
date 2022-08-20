@@ -18,6 +18,19 @@ export const development = {
   migrations,
 };
 
+// export const development = {
+//   client: 'pg',
+//   connection: {
+//     host: '127.0.0.1',
+//     port: 5432,
+//     database: 'b4_hexlet_db',
+//     user: 'prestor',
+//     password: 'f',
+//   },
+//   useNullAsDefault: true,
+//   migrations,
+// };
+
 export const test = {
   client: 'sqlite3',
   connection: ':memory:',

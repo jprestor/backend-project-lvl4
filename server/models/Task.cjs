@@ -25,8 +25,22 @@ module.exports = class Task extends BaseModel {
     };
   }
 
+  $parseJson(json, opt) {
+    // Remember to call the super class's implementation.
+    json = super.$parseJson(json, opt);
+    // Do your conversion here.
+    const converted = {
+      ..._.omit(json, 'labels'),
+      statusId: _.toInteger(json.statusId) || null,
+      executorId: _.toInteger(json.executorId) || null,
+      creatorId: _.toInteger(json.creatorId) || null,
+    };
+
+    return converted;
+  }
+
   static modifiers = {
-    async filter(query, filterParams, userId) {
+    async filter(query, filterParams = {}, userId) {
       const { status, executor, label, isCreatorUser } = filterParams;
 
       if (status) {
