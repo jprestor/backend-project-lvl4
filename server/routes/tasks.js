@@ -108,13 +108,13 @@ export default (app) => {
       try {
         const validTask = await models.task.fromJson({ ...data, creatorId });
         await models.task.transaction(async (trx) => {
-          const labels = await models.label.query(trx).findByIds([labelsIds]);
+          const labels = await models.label.query(trx).findByIds(labelsIds);
           await models.task.query(trx).upsertGraph(
             {
               ...validTask,
               labels,
             },
-            { relate: true, unrelate: true },
+            { relate: true, unrelate: true, noUpdate: ['labels'] },
           );
         });
 
@@ -142,7 +142,7 @@ export default (app) => {
         const { models } = app.objection;
         const { data } = req.body;
         const taskId = _.toInteger(req.params.id);
-        const labelsIds = _.has(data, 'labels') ? [...data.labels] : [];
+        const labelIds = _.has(data, 'labels') ? [...data.labels] : [];
         const task = await models.task.query().findById(taskId);
         const statusesList = await models.taskStatus.query();
         const usersList = await models.user.query();
@@ -151,14 +151,18 @@ export default (app) => {
         try {
           const validTask = await models.task.fromJson(data);
           await models.task.transaction(async (trx) => {
-            const labels = await models.label.query(trx).findByIds([labelsIds]);
+            const labels = await models.label.query(trx).findByIds(labelIds);
             await models.task.query(trx).upsertGraph(
               {
                 id: taskId,
                 ...validTask,
                 labels,
               },
-              { relate: true, unrelate: true, noUpdate: ['labels'] },
+              {
+                relate: true,
+                unrelate: true,
+                noUpdate: ['labels'],
+              },
             );
           });
 
