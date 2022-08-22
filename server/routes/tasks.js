@@ -99,22 +99,20 @@ export default (app) => {
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
       const { models } = app.objection;
       const { data } = req.body;
+      const labelsIds = _.has(data, 'labels') ? [...data.labels] : [];
       const creatorId = req.user.id;
-      const statuses = await models.taskStatus.query();
-      const users = await models.user.query();
-      const labels = await models.label.query();
+      const statusesList = await models.taskStatus.query();
+      const usersList = await models.user.query();
+      const labelsList = await models.label.query();
 
       try {
         const validTask = await models.task.fromJson({ ...data, creatorId });
-        const selectedLabels = [...data.labels]
-          .map((id) => _.toInteger(id))
-          .map((id) => ({ id }));
-
         await models.task.transaction(async (trx) => {
+          const labels = await models.label.query(trx).findByIds([labelsIds]);
           await models.task.query(trx).upsertGraph(
             {
               ...validTask,
-              labels: selectedLabels,
+              labels,
             },
             { relate: true, unrelate: true },
           );
@@ -127,9 +125,9 @@ export default (app) => {
         reply.render('tasks/new', {
           task: data,
           errors,
-          statuses,
-          users,
-          labels,
+          statuses: statusesList,
+          users: usersList,
+          labels: labelsList,
           selected: data,
         });
       }
@@ -144,41 +142,36 @@ export default (app) => {
         const { models } = app.objection;
         const { data } = req.body;
         const taskId = _.toInteger(req.params.id);
+        const labelsIds = _.has(data, 'labels') ? [...data.labels] : [];
         const task = await models.task.query().findById(taskId);
-        const statuses = await models.taskStatus.query();
-        const users = await models.user.query();
-        const labels = await models.label.query();
+        const statusesList = await models.taskStatus.query();
+        const usersList = await models.user.query();
+        const labelsList = await models.label.query();
 
         try {
           const validTask = await models.task.fromJson(data);
-          const selectedLabels = [...data.labels]
-            .map((id) => _.toInteger(id))
-            .map((id) => ({ id }));
-
           await models.task.transaction(async (trx) => {
-            await models.task
-              .query(trx)
-              .upsertGraph(
-                {
-                  id: taskId,
-                  ...validTask,
-                  labels: selectedLabels,
-                },
-                { relate: true, unrelate: true },
-              )
-              .debug();
+            const labels = await models.label.query(trx).findByIds([labelsIds]);
+            await models.task.query(trx).upsertGraph(
+              {
+                id: taskId,
+                ...validTask,
+                labels,
+              },
+              { relate: true, unrelate: true, noUpdate: ['labels'] },
+            );
           });
 
           req.flash('info', i18next.t('flash.tasks.edit.success'));
           reply.redirect(app.reverse('tasks'));
-        } catch ({ data: errors }) {
+        } catch ({ errors }) {
           req.flash('error', i18next.t('flash.tasks.edit.error'));
           reply.render('tasks/edit', {
             task,
             errors,
-            statuses,
-            users,
-            labels,
+            statuses: statusesList,
+            users: usersList,
+            labels: labelsList,
             selected: data,
           });
         }
