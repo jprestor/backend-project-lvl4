@@ -43,18 +43,12 @@ module.exports = class Task extends BaseModel {
     async filter(query, filterParams = {}, userId) {
       const { status, executor, label, isCreatorUser } = filterParams;
 
-      if (status) {
-        query.where({ statusId: _.toInteger(status) });
-      }
-      if (executor) {
-        query.andWhere({ executorId: _.toInteger(executor) });
-      }
-      if (label) {
-        query.andWhere('labels.id', _.toInteger(label));
-      }
-      if (isCreatorUser) {
-        query.andWhere({ creatorId: userId });
-      }
+      query
+        .skipUndefined()
+        .where('statusId', status || undefined)
+        .andWhere('executorId', executor || undefined)
+        .andWhere('labels.id', label || undefined)
+        .andWhere('creatorId', isCreatorUser ? userId : undefined);
     },
   };
 
