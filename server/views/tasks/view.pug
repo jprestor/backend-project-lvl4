@@ -17,7 +17,7 @@ block content
         span= `${creator.firstName} ${creator.lastName}`
       .d-flex.flex-wrap.mb-3
         span.text-muted.me-2= t('views.tasks.executor')
-        span= `${executor.firstName} ${executor.lastName}`
+        span= executor && `${executor.firstName} ${executor.lastName}`
       .d-flex.flex-wrap.mb-3
         span.text-muted.me-2= t('views.tasks.createdAt')
         span= formatDate(task.createdAt)

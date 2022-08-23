@@ -161,6 +161,7 @@ export default (app) => {
               {
                 relate: true,
                 unrelate: true,
+                update: true,
                 noUpdate: ['labels'],
               },
             );
@@ -168,7 +169,7 @@ export default (app) => {
 
           req.flash('info', i18next.t('flash.tasks.edit.success'));
           reply.redirect(app.reverse('tasks'));
-        } catch ({ errors }) {
+        } catch ({ data: errors }) {
           req.flash('error', i18next.t('flash.tasks.edit.error'));
           reply.render('tasks/edit', {
             task,

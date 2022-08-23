@@ -14,7 +14,7 @@ module.exports = class Task extends BaseModel {
   static get jsonSchema() {
     return {
       type: 'object',
-      // required: ['name', 'statusId', 'creatorId'],
+      required: ['name', 'statusId', 'creatorId'],
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1 },
@@ -33,8 +33,8 @@ module.exports = class Task extends BaseModel {
     const converted = {
       ...json,
       statusId: _.toInteger(json.statusId) || null,
-      executorId: _.toInteger(json.executorId) || null,
       creatorId: _.toInteger(json.creatorId) || null,
+      executorId: _.toInteger(json.executorId),
     };
 
     return converted;

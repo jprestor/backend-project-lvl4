@@ -37,7 +37,7 @@ block content
             a(href=route('viewTask', { id: task.id }))= task.name
           td= status.name
           td= `${creator.firstName} ${creator.lastName}`
-          td= `${executor.firstName} ${executor.lastName}`
+          td= executor && `${executor.firstName} ${executor.lastName}`
           td= formatDate(task.createdAt)
           td
             .d-flex.flex-wrap
