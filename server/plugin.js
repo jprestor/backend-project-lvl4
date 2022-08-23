@@ -104,15 +104,17 @@ const registerPlugins = async (app) => {
     },
   });
 
-  fastifyPassport.registerUserDeserializer((user) =>
-    app.objection.models.user.query().findById(user.id),
-  );
+  // prettier-ignore
+  fastifyPassport.registerUserDeserializer((user) => (
+    app.objection.models.user.query().findById(user.id)
+  ));
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
   fastifyPassport.use(new FormStrategy('form', app));
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.decorate('fp', fastifyPassport);
-  app.decorate('authenticate', (...args) =>
+  // prettier-ignore
+  app.decorate('authenticate', (...args) => (
     fastifyPassport.authenticate(
       'form',
       {
@@ -120,8 +122,8 @@ const registerPlugins = async (app) => {
         failureFlash: i18next.t('flash.authError'),
       },
       // @ts-ignore
-    )(...args),
-  );
+    )(...args)
+  ));
 
   app.register(fastifyMethodOverride);
   app.register(fastifyObjectionjs, {

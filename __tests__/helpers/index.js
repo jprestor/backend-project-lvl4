@@ -14,8 +14,10 @@ import {
 // TODO: использовать для фикстур https://github.com/viglucci/simple-knex-fixtures
 
 const getFixturePath = (filename) => path.join('..', '..', '__fixtures__', filename);
-const readFixture = (filename) =>
-  fs.readFileSync(new URL(getFixturePath(filename), import.meta.url), 'utf-8').trim();
+// prettier-ignore
+const readFixture = (filename) => (
+  fs.readFileSync(new URL(getFixturePath(filename), import.meta.url), 'utf-8').trim()
+);
 const getFixtureData = (filename) => JSON.parse(readFixture(filename));
 
 export const getTestData = () => getFixtureData('testData.json');

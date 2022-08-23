@@ -19,7 +19,13 @@ export default (app) => {
         const users = await models.user.query();
         const labels = await models.label.query();
 
-        reply.render('tasks/index', { tasks, statuses, users, labels, selected: query });
+        reply.render('tasks/index', {
+          tasks,
+          statuses,
+          users,
+          labels,
+          selected: query,
+        });
         return reply;
       },
     )
@@ -53,7 +59,11 @@ export default (app) => {
           .query()
           .findById(taskId)
           .withGraphJoined('[status, executor, creator, labels]');
-        const { status, creator, executor, labels } = task;
+
+        // prettier-ignore
+        const {
+          status, creator, executor, labels,
+        } = task;
 
         reply.render('tasks/view', {
           task,
@@ -161,7 +171,6 @@ export default (app) => {
               {
                 relate: true,
                 unrelate: true,
-                update: true,
                 noUpdate: ['labels'],
               },
             );
