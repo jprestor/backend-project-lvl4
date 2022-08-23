@@ -1,3 +1,4 @@
+const { Model } = require('objection');
 const BaseModel = require('./BaseModel.cjs');
 
 module.exports = class Label extends BaseModel {
@@ -10,8 +11,24 @@ module.exports = class Label extends BaseModel {
       type: 'object',
       required: ['name'],
       properties: {
-        id: { type: 'integer' },
         name: { type: 'string', minLength: 1 },
+      },
+    };
+  }
+
+  static get relationMappings() {
+    return {
+      tasks: {
+        relation: Model.ManyToManyRelation,
+        modelClass: 'Task',
+        join: {
+          from: 'labels.id',
+          through: {
+            from: 'labels_tasks.labelId',
+            to: 'labels_tasks.taskId',
+          },
+          to: 'tasks.id',
+        },
       },
     };
   }

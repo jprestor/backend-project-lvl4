@@ -31,7 +31,7 @@ module.exports = class Task extends BaseModel {
     json = super.$parseJson(json, opt);
     // Do your conversion here.
     const converted = {
-      ..._.omit(json, 'labels'),
+      ...json,
       statusId: _.toInteger(json.statusId) || null,
       executorId: _.toInteger(json.executorId) || null,
       creatorId: _.toInteger(json.creatorId) || null,
