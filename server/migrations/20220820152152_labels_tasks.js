@@ -8,7 +8,6 @@ export const up = (knex) => (
     table.integer('task_id').references('id').inTable('tasks').notNullable();
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
-  }
-));
+  }));
 
 export const down = (knex) => knex.schema.dropTable('labels_tasks');
