@@ -1,5 +1,3 @@
-// @ts-check
-
 const BaseModel = require('./BaseModel.cjs');
 
 module.exports = class TaskStatus extends BaseModel {
@@ -12,6 +10,7 @@ module.exports = class TaskStatus extends BaseModel {
       type: 'object',
       required: ['name'],
       properties: {
+        id: { type: 'integer' },
         name: { type: 'string', minLength: 1 },
       },
     };

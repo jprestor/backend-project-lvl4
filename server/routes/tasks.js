@@ -11,7 +11,6 @@ export default (app) => {
         const { models } = app.objection;
         const query = req.query.data;
         const userId = req.user.id;
-        console.log('query', query);
         const tasks = await models.task
           .query()
           .withGraphJoined('[status, executor, creator, labels]')

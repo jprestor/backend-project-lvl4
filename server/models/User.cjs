@@ -1,5 +1,3 @@
-// @ts-check
-
 const BaseModel = require('./BaseModel.cjs');
 const objectionUnique = require('objection-unique');
 const encrypt = require('../lib/secure.cjs');

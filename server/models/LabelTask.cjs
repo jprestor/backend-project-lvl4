@@ -1,5 +1,3 @@
-const { Model } = require('objection');
-
 const BaseModel = require('./BaseModel.cjs');
 
 module.exports = class LabelTask extends BaseModel {
@@ -12,6 +10,7 @@ module.exports = class LabelTask extends BaseModel {
       type: 'object',
       required: ['labelId', 'taskId'],
       properties: {
+        id: { type: 'integer' },
         labelId: { type: 'integer' },
         taskId: { type: 'integer' },
       },
